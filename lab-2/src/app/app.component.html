@@ -8,8 +8,20 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
 
+<!-- NOTE: -->
+<!-- I found some more up-to-date examples and guides in the angular guide since using *ngFor didn't work for me, the docs said that it's also discouraged nowadays -->
+
 <main class="main">
-  
+  <h1>{{ title }}</h1>
+  <p>{{ summary() }}</p>
+  @for (item of thingsToDo; track item; let index = $index, odd = $odd, even = $even) {
+    <p [class.even-row]="even" [class.odd-row]="odd">
+      {{ index + 1 }}. {{ item }}
+    </p>
+  }
+  @if (thingsCompleted.length == 0) {
+    <p>Nothing completed</p>
+  }
 </main>
 
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
