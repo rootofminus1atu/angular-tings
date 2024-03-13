@@ -1,0 +1,8 @@
+  getMoviesData(movieName:string, page:number):Observable<IOMDBResponse2> {
+    return this._http.get<IOMDBResponse2>(this._siteurl+ this._key2 + movieName + "&page=" + page)
+    .pipe(
+      tap(data => console.log('Moviedata/error' + JSON.stringify(data))
+    ),
+    catchError(this.handleError)
+    );
+  }
