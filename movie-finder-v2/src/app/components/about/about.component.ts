@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import environment from '../../env';
 
 @Component({
   selector: 'app-about',
@@ -8,5 +9,6 @@ import { Component } from '@angular/core';
   styleUrl: './about.component.css'
 })
 export class AboutComponent {
-
+  studentId = environment.studentId
+  studentName = environment.studentName
 }
