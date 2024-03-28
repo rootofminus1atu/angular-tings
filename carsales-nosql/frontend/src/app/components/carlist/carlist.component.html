@@ -15,13 +15,22 @@
         <label>Image</label>
         <input type="text" name="imageURL" placeholder="Enter Link to Image" #image>
   
-        
-        <button class="btn btn-primary" type="submit" (click)="addCar(make.value, 
-                  model.value,year.value,image.value)">Add Car</button>
+        <button class="btn btn-primary" type="submit" 
+          (click)="addCar(make.value, model.value, year.value, image.value)"
+        >
+          Add Car
+        </button>
       </form>
     </div>
 </div>
   
 <div class='container'>
-    <app-car *ngFor="let carData of carsData" [carData]="carData"></app-car>
+  @if (!carsData) {
+    <p>loading...</p>
+  } @else if (carsData.isOk()) {
+    <app-car *ngFor="let carData of carsData.value" [carData]="carData" (carDeleted)="handleCarDeleted($event)"></app-car>
+  } @else {
+    <p>error loading cars :(</p>
+    <p>{{carsData.error}}</p>
+  }
 </div>

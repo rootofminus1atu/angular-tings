@@ -3,6 +3,7 @@ import { ICar, NewCar } from '../../interfaces/car';
 import { CarApiService } from '../../services/car-api.service';
 import { CommonModule } from '@angular/common';
 import { CarComponent } from '../car/car.component';
+import { ok, Result } from 'neverthrow';
 
 @Component({
   selector: 'app-carlist',
@@ -12,48 +13,35 @@ import { CarComponent } from '../car/car.component';
   styleUrl: './carlist.component.css'
 })
 export class CarlistComponent {
-  carsData: ICar[] = []
+  carsData!: Result<ICar[], string>;
   show: boolean = true
+
   constructor(private _carAPIService: CarApiService) {}
 
   ngOnInit() {
     this.getCars()
   }
 
-  // todo: Result type to hopefully eliminate the annoying if/else or something else
   getCars() {
-    this._carAPIService.getCarDetails().subscribe(carsData => { 
-      if (typeof carsData === 'string') {
-        console.error("the carsData is a string (error):", carsData)
-        return
-      } else {
-        this.carsData = carsData
-        console.log(carsData)
-      }
-    })
+    this._carAPIService.getCarDetails().subscribe(carsData => this.carsData = carsData)
   }
 
-
-  addCar(make:string, model:string, year:string, image:string): boolean {
+  addCar(make: string, model: string, year: string, image: string): boolean {
     let newCar = new NewCar(make, model, year, image)
 
-    this._carAPIService.addCarDetails(newCar).subscribe(carsData => { 
-      if (typeof carsData === 'string') {
-        console.error("the carsData is a string (error):", carsData)
-        return
-      } else {
-        console.log(carsData)
-        // carsData returned from `addCarDetails` is 
-        // {acknowledged: true, insertedId: '65fad24be55626ad7ccfc0b0'}
-        // rather than a list of cars
-
-        // quick fix:
-        // change `this.carsData = carsData` to:
-        this.getCars()
-      }
+    this._carAPIService.addCarDetails(newCar).subscribe(carRes => {
+      carRes.match(
+        // instead of refetching we could add in a car to the list of cars
+        (_carRes) => this.getCars(),
+        (_err) => { /* some error handling, showing a popup or something */} 
+      )
     })
 
     return false
   }
-  
+
+  handleCarDeleted(_carId: string) {
+    console.log("refetching")
+    this.getCars()
+  }
 }
