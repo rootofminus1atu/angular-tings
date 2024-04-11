@@ -1,0 +1,59 @@
+
+<!--
+<div class='container mt-3 mb-3'>
+    <button (click)="show = !show">{{show ? 'Hide' : 'Add a Car'}}</button>
+  
+    <div *ngIf="show">
+      <form>
+        <label>Make</label>
+        <input type="text" name="make" placeholder="Enter Make" #make>
+  
+        <label>Model</label>
+        <input type="text" name="model" placeholder="Enter Model" #model>
+  
+        <label>Year</label>
+        <input type="text" name="year" placeholder="Enter Year" #year>
+  
+        <label>Image</label>
+        <input type="text" name="imageURL" placeholder="Enter Link to Image" #image>
+  
+        <button class="btn btn-primary" type="submit" 
+          (click)="addCar(make.value, model.value, year.value, image.value)"
+        >
+          Add Car
+        </button>
+      </form>
+    </div>
+</div>
+-->
+
+<ng-container>
+  <div *ngIf="carsData$ | async as cars; else loading">
+    @if (cars.isOk()) {
+      <app-car *ngFor="let carData of cars.value" [carData]="carData"></app-car>
+    } @else {
+      Oh no, we errored
+    }
+  </div>
+  <ng-template #loading>
+    loading...
+  </ng-template>
+</ng-container>
+
+
+
+  
+<!--
+<div class='container'>
+  @if (!carsData) {
+    <p>loading...</p>
+  } @else if (carsData.isOk()) {
+    <app-car *ngFor="let carData of carsData.value" [carData]="carData" (carDeleted)="handleCarDeleted($event)"></app-car>
+  } @else {
+    <p>error loading cars :(</p>
+    <p>{{carsData.error}}</p>
+  }
+</div>
+-->
+
+

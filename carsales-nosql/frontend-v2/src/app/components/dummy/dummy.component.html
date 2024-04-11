@@ -1,0 +1,16 @@
+<div *ngIf="people$ | async as people; else error">
+    <ul>
+        <li *ngFor="let person of people">{{ person }}</li>
+    </ul>
+</div>
+<ng-template #error>
+    <div class="error-div">
+        <p>Error: {{ (people$ | async) || 'An unknown error occurred.' }}</p>
+    </div>
+</ng-template>
+
+<ul>
+    @for (person of people$ | async; track $index) {
+        <li>{{ person }}</li>
+    }
+</ul>
