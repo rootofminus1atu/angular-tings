@@ -19,6 +19,7 @@ export class CarlistComponent {
   carsData$ = this._carAPIService.getCarDetails()
 
   constructor(private _carAPIService: CarApiService) {}
+}
 
 
   /*
@@ -49,4 +50,3 @@ export class CarlistComponent {
     this.getCars()
   }
   */
-}

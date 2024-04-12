@@ -13,13 +13,6 @@ export class CarApiService {
 
   constructor(private _http: HttpClient) { }
 
-  /*
-getNameFromService(): Observable<Result<string, string>> {
-    // return "joe" but 1 second time wait
-    return of(ok("joe")).pipe(delay(1000))
-  }
-  */
-
   getCarDetails(): Observable<Result<ICar[], string>> {
     return this._http.get<ICar[]>(this.url("/"))
       .pipe(
