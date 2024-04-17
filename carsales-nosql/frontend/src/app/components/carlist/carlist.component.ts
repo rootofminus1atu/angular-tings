@@ -14,7 +14,7 @@ import { ok, Result } from 'neverthrow';
 })
 export class CarlistComponent {
   carsData!: Result<ICar[], string>;
-  show: boolean = true
+  show: boolean = false
 
   constructor(private _carAPIService: CarApiService) {}
 
