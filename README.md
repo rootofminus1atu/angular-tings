@@ -1,2 +1,2 @@
 # angular-tings
- why
+angles
