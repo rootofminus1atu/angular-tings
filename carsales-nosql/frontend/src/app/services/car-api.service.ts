@@ -8,7 +8,7 @@ import { err, ok, Result } from 'neverthrow';
   providedIn: 'root'
 })
 export class CarApiService {
-  private _urlBase = "http://3.249.102.226:5050"
+  private _urlBase = "http://3.252.77.42:5050"
   private url = (path: string) => `${this._urlBase}/cars${path}`
 
   constructor(private _http: HttpClient) { }
