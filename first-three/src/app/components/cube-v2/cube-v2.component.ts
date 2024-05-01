@@ -102,15 +102,20 @@ export class CubeV2Component {
   }
 
   renderBox(texture: THREE.Texture) {
-    this.box = new THREE.Object3D()
-
     const boxSize = { 
       width: 20, 
       height: 20, 
       depth: 20 
     }
 
-    const material = new THREE.MeshPhongMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+    const materials = [
+      new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide }), // front
+      new THREE.MeshBasicMaterial({ color: 0xff00ff, side: THREE.DoubleSide }), // back
+      new THREE.MeshBasicMaterial({ color: 0x00ffff, side: THREE.DoubleSide }), // right
+      new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide }), // left
+      new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide }),     // top 
+      new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide })  // bottom 
+    ];
 
     const planeGeometries = [
       new THREE.PlaneGeometry(boxSize.width, boxSize.height), // front
@@ -121,9 +126,8 @@ export class CubeV2Component {
       new THREE.PlaneGeometry(boxSize.width, boxSize.depth), // bottom
     ];
 
-    const planes = planeGeometries.map(geometry => new THREE.Mesh(geometry, material));
-
-    planes[0].position.set(0, 0, boxSize.depth / 1); // front
+    const planes = planeGeometries.map((geometry, index) => new THREE.Mesh(geometry, materials[index]));
+    planes[0].position.set(0, 0, boxSize.depth / 2); // front
     planes[1].position.set(0, 0, -boxSize.depth / 2); // back
     planes[2].position.set(boxSize.width / 2, 0, 0); // right
     planes[2].rotation.y = Math.PI / 2; // rotate right plane to be perpendicular to front/back
@@ -134,10 +138,54 @@ export class CubeV2Component {
     planes[5].position.set(0, -boxSize.height / 2, 0); // bottom
     planes[5].rotation.x = Math.PI / 2; // rotate bottom plane to be perpendicular to front/back
 
+    this.box = new THREE.Object3D()
     planes.forEach(plane => this.box.add(plane));
+
+    const lidPivot = new THREE.Object3D()
+    const lid = planes[4]
+    lidPivot.add(lid)
+
+    // if my box is from (-10 -10, -10) to (10, 10, 10)
+    // why does this place the pivot at (10, 20, 20)
+    lidPivot.position.set(0, 10, 10)
+
+    this.box.add(lidPivot)
 
     this.scene.add(this.box);
     this.render()
+  }
+
+  openBox() {
+    const duration = 1
+    const targetRotation = Math.PI / 2
+
+    const lidPivot = this.box.children.find(child => child.type === "Object3D");
+
+    if (!lidPivot) {
+      console.error("Lid pivot not found!");
+      return;
+    }
+
+    const lid = lidPivot.children[0]; // Lid is the first child of the pivot
+    const initialRotation = lidPivot.rotation.x;
+
+    const clock = new THREE.Clock()
+    const animate = () => {
+      const elapsed = clock.getElapsedTime()
+      const progress = Math.min(elapsed / duration, 1)
+      console.log('progress:', progress)
+
+      const newRotation = initialRotation + (targetRotation - initialRotation) * progress
+      lid.rotation.x = newRotation
+
+      this.render()
+
+      if (progress < 1) {
+        requestAnimationFrame(animate)
+      }
+    }
+
+    requestAnimationFrame(animate)
   }
 
 
