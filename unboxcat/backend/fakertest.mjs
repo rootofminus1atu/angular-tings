@@ -1,5 +1,6 @@
 import { allFakers } from '@faker-js/faker';
 
+
 const counterCodes = () => {
     const fakerCodes = Object.keys(allFakers)
 
