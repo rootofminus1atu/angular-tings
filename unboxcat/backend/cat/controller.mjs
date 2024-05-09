@@ -1,7 +1,8 @@
 import express from 'express'
 import { Cat } from './model.mjs'
 import { apiKey } from '../server.mjs'
-import { getRandomNameFromCountry } from '../helpers.mjs'
+import { getRandomRarity } from '../helpers/rarities.mjs'
+import { getRandomFullName, getRandomNameFromCountry } from '../helpers/names.mjs'
 
 export const catRoutes = express.Router()
     .get('/', getAllCats)
@@ -19,36 +20,54 @@ async function getAllCats(req, res) {
 }
 
 async function getRandomCat(req, res) {
-    const catObject = await fetchRandomCat();
-    if (catObject === null) {
-        return res.status(500).json({ error: "Fetching cat failed :(" });
+    const cat = await fetchRandomCat()
+    if (cat === null) {
+        return res.status(500).json({ error: "Fetching a random cat failed :(" })
     }
 
-    const country_code = catObject['breeds'][0]['country_code']
-    console.log(country_code)
+    const breed = cat['breeds'][0]  // just considering the main breed
+    const country_code = breed['country_code']
 
-    // const rarity = getRandomRarity()
-    const name = getRandomNameFromCountry(country_code)
-    console.log(name)
+    const rarity = getRandomRarity()
+    const petName = getRandomNameFromCountry(country_code)
+    const temperamentArr = breed.temperament.split(',').map(s => s.trim())
+    const fullName = getRandomFullName(temperamentArr, breed.name, petName)
 
-    
-    res.status(200).json({hi: "hi"})
+    const catData = {
+        _id: cat.id,
+        imgUrl: cat.url,
+        breed: {
+            id: breed.id,
+            name: breed.name,
+            temperament: temperamentArr,
+            alt_names: breed.alt_names.split(',').map(s => s.trim()),
+            origin: breed.origin,
+            country_code: country_code,
+            description: breed.description,
+            wikipedia_url: breed.wikipedia_url,
+        },
+        rarity: rarity,
+        petName: petName,
+        fullName: fullName
+    }
+
+    res.status(200).json({ cat: catData })
 }
 
 async function fetchRandomCat() {
-    const url = `https://api.thecatapi.com/v1/images/search?api_key=${apiKey}&has_breeds=1`;
-    const resp = await fetch(url);
+    const url = `https://api.thecatapi.com/v1/images/search?api_key=${apiKey}&has_breeds=1`
+    const resp = await fetch(url)
 
     if (!resp.ok) {
-        console.error('Network response was not ok');
-        return null;
+        console.error('Network response was not ok')
+        return null
     }
 
     try {
-        const jsonData = await resp.json();
-        return jsonData[0]; // Assuming the API returns an array with one cat object
+        const jsonData = await resp.json()
+        return jsonData[0]
     } catch (error) {
-        console.error('Error parsing JSON:', error);
-        return null;
+        console.error('Error parsing JSON:', error)
+        return null
     }
 }

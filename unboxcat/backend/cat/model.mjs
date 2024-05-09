@@ -6,6 +6,7 @@ const breedSchema = new Schema({
     temperament: String,
     alt_names: String,
     origin: String,
+    country_code: String,
     description: String,
     wikipedia_url: String,
 })
@@ -13,10 +14,11 @@ const breedSchema = new Schema({
 const catSchema = new Schema({
     _id: String,
     imgUrl: String,
-    breeds: [breedSchema],
+    breed: breedSchema,
     
     rarity: Number,
-    name: String 
+    petName: String,
+    fullName: String
 }, {timestamps: true})
 
 export const Cat = model('cats', catSchema)
