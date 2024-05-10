@@ -3,7 +3,7 @@ import { allFakers } from "@faker-js/faker"
 
 
 export function getRandomFullName(temperamentArr, breedName, petName) {
-    const temperament = randomChoice(temperamentArr)
+    const temperament = randomChoiceOrDefault(temperamentArr, "Nice")
     
     return `${petName}, the ${temperament} ${breedName}`
 }
@@ -88,4 +88,12 @@ function extractCountryCode(codeStr) {
 function randomChoice(arr) {
     const randomIndex = Math.floor(Math.random() * arr.length)
     return arr[randomIndex]
+}
+
+function randomChoiceOrDefault(arr, defaultElem) {
+    if (arr.length === 0) {
+        return defaultElem
+    }
+
+    return randomChoice(arr)
 }

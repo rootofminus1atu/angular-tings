@@ -14,23 +14,32 @@ async function getAllCats(req, res) {
         .find({})
         .sort({ createdAt: -1 })
 
-    console.log("we got json:", cats, "yes")
-
     res.status(200).json(cats)
 }
 
 async function getRandomCat(req, res) {
     const cat = await fetchRandomCat()
-    if (cat === null) {
+    if (!cat) {
         return res.status(500).json({ error: "Fetching a random cat failed :(" })
     }
 
-    const breed = cat['breeds'][0]  // just considering the main breed
-    const country_code = breed['country_code']
+    const foundCat = await Cat.findById(cat.id)
+    if (foundCat) {
+        console.log("================== OMG ==================")
+        console.log("cat that was previously discovered:")
+        console.log(foundCat.fullName, foundCat.rarity)
+        console.log("================== OMG ==================")
+
+        return res.status(200).json({ cat: foundCat })
+    }
+
+    const breed = cat.breeds[0]  // just considering the main breed
+    const countryCode = breed.country_code
 
     const rarity = getRandomRarity()
-    const petName = getRandomNameFromCountry(country_code)
-    const temperamentArr = breed.temperament.split(',').map(s => s.trim())
+    const petName = getRandomNameFromCountry(countryCode)
+    const temperamentArr = breed.temperament ? breed.temperament.split(',').map(s => s.trim()) : []
+    const altNamesArr = breed.alt_names ? breed.alt_names.split(',').map(s => s.trim()) : []
     const fullName = getRandomFullName(temperamentArr, breed.name, petName)
 
     const catData = {
@@ -40,9 +49,9 @@ async function getRandomCat(req, res) {
             id: breed.id,
             name: breed.name,
             temperament: temperamentArr,
-            alt_names: breed.alt_names.split(',').map(s => s.trim()),
+            alt_names: altNamesArr,
             origin: breed.origin,
-            country_code: country_code,
+            country_code: countryCode,
             description: breed.description,
             wikipedia_url: breed.wikipedia_url,
         },
@@ -51,7 +60,9 @@ async function getRandomCat(req, res) {
         fullName: fullName
     }
 
-    res.status(200).json({ cat: catData })
+    const createdCat = await Cat.create(catData)
+
+    res.status(200).json({ cat: createdCat })
 }
 
 async function fetchRandomCat() {
@@ -67,7 +78,7 @@ async function fetchRandomCat() {
         const jsonData = await resp.json()
         return jsonData[0]
     } catch (error) {
-        console.error('Error parsing JSON:', error)
+        console.error('Error parsing JSON:', error.message, error)
         return null
     }
 }
