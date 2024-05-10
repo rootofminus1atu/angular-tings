@@ -60,9 +60,13 @@ async function getRandomCat(req, res) {
         fullName: fullName
     }
 
-    const createdCat = await Cat.create(catData)
-
-    res.status(200).json({ cat: createdCat })
+    try {
+        const createdCat = await Cat.create(catData)
+        res.status(200).json({ cat: createdCat })
+    } catch (error) {
+        // should never happen but who knows
+        res.status(400).json({ error: error.message })
+    }
 }
 
 async function fetchRandomCat() {
