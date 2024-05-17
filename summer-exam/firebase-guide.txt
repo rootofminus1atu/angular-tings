@@ -1,0 +1,12 @@
+1. npm install -g firebase-tools
+2. firebase login
+3. ng build
+4. look at the dist folder and the path to index.html, 
+    here it's something like dist/summer-exam/browser
+    it prob won't be called "summer-exam" for you
+5. firebase init hosting
+6. for the "What do you want to use as your public directory?" question answer:
+    dist/summer-exam/browser or whatever your project name was instead of summer-exam
+7. File dist/summer-exam/browser/index.html already exists. Overwrite?
+    NO DO NOT OVERWRITE
+8. firebase deploy
